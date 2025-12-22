@@ -2,12 +2,6 @@ name: Conventional Commit Check
 
 on:
   workflow_call:
-    inputs:
-      package_json_file:
-        description: "Path to package.json file"
-        required: false
-        type: string
-        default: "package.json"
 
 jobs:
   commit-check:
@@ -17,24 +11,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: "22"
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          package_json_file: ${{ inputs.package_json_file }}
+          bun-version: latest
 
       - name: Install commitlint
         run: |
-          pnpm add -g @commitlint/cli
-          pnpm add -D @commitlint/config-conventional
+          bun i -g @commitlint/cli
+          bun i -D @commitlint/config-conventional
 
       - name: Create commitlint config if missing
         run: |
-          if [ ! -f .commitlintrc.json ] && [ ! -f .commitlintrc.js ] && [ ! -f .commitlintrc.yml ] && [ ! -f .commitlintrc.yaml ] && ! grep -q '"commitlint"' "${{ inputs.package_json_file }}" 2>/dev/null; then
+          if [ ! -f .commitlintrc.json ] && [ ! -f .commitlintrc.js ] && [ ! -f .commitlintrc.yml ] && [ ! -f .commitlintrc.yaml ] && ! grep -q '"commitlint"' "package.json" 2>/dev/null; then
             echo '{"extends": ["@commitlint/config-conventional"]}' > .commitlintrc.json
           fi
 
