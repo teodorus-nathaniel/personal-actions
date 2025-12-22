@@ -177,14 +177,14 @@ The combined workflow includes:
 - Validates all commit messages in the PR
 - Creates default commitlint config if missing (requires `package.json`)
 - Reads pnpm version from `package.json` `packageManager` field (falls back to
-  pnpm 10)
+  latest pnpm)
 
 ## Requirements
 
 - Node.js 22+
 - pnpm (installed automatically in workflows)
   - The workflows read the pnpm version from your `package.json`
-    `packageManager` field (e.g., `"packageManager": "pnpm@9.0.0"`)
-  - If not specified, defaults to pnpm 10
+    `packageManager` field (e.g., `"packageManager": "pnpm@10.7.0"`)
+  - If not specified, defaults to latest pnpm
   - You can specify a custom `package.json` path via the `package_json_file`
     input if needed
