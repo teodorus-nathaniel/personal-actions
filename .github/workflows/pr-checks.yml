@@ -34,6 +34,10 @@ jobs:
           else
             echo "should-run=false" >> $GITHUB_OUTPUT
           fi
+          echo "run-prettier: ${{ inputs.run-prettier }}"
+          echo "run-markdown: ${{ inputs.run-markdown }}"
+          echo "run-commits: ${{ inputs.run-commits }}"
+          echo "github.event_name: ${{ github.event_name }}"
 
   prettier:
     needs: check-draft
