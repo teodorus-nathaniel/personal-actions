@@ -162,8 +162,7 @@ The combined workflow includes:
 - Validates that a Prettier configuration exists
 - Checks code formatting using Prettier
 - Supports all Prettier-supported file types
-- Reads pnpm version from `package.json` `packageManager` field (falls back to
-  latest pnpm)
+- Uses Bun for package management
 
 ### Markdown Lint (`markdown-check.yml`)
 
@@ -176,15 +175,12 @@ The combined workflow includes:
 - Validates PR titles follow conventional commit format
 - Validates all commit messages in the PR
 - Creates default commitlint config if missing (requires `package.json`)
-- Reads pnpm version from `package.json` `packageManager` field (falls back to
-  latest pnpm)
+- Uses Bun for package management
 
 ## Requirements
 
 - Node.js 22+
-- pnpm (installed automatically in workflows)
-  - The workflows read the pnpm version from your `package.json`
-    `packageManager` field (e.g., `"packageManager": "pnpm@10.7.0"`)
-  - If not specified, defaults to latest pnpm
+- Bun (installed automatically in workflows)
+  - Uses the latest version of Bun
   - You can specify a custom `package.json` path via the `package_json_file`
     input if needed

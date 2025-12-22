@@ -2,12 +2,6 @@ name: Conventional Commit Check
 
 on:
   workflow_call:
-    inputs:
-      package_json_file:
-        description: "Path to package.json file"
-        required: false
-        type: string
-        default: "package.json"
 
 jobs:
   commit-check:
