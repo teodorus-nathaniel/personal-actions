@@ -163,7 +163,7 @@ The combined workflow includes:
 - Checks code formatting using Prettier
 - Supports all Prettier-supported file types
 - Reads pnpm version from `package.json` `packageManager` field (falls back to
-  pnpm 10)
+  latest pnpm)
 
 ### Markdown Lint (`markdown-check.yml`)
 
