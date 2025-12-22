@@ -36,14 +36,14 @@ jobs:
   prettier:
     needs: check-draft
     if: needs.check-draft.outputs.should-run == 'true' && inputs.run-prettier != false
-    uses: ${{ github.repository }}/.github/workflows/prettier.yml@${{ github.ref }}
+    uses: holdex/github-actions/.github/workflows/prettier.yml@main
 
   markdown:
     needs: check-draft
     if: needs.check-draft.outputs.should-run == 'true' && inputs.run-markdown != false
-    uses: ${{ github.repository }}/.github/workflows/markdown-check.yml@${{ github.ref }}
+    uses: holdex/github-actions/.github/workflows/markdown-check.yml@main
 
   commits:
     needs: check-draft
     if: needs.check-draft.outputs.should-run == 'true' && inputs.run-commits != false
-    uses: ${{ github.repository }}/.github/workflows/commit-check.yml@${{ github.ref }}
+    uses: holdex/github-actions/.github/workflows/commit-check.yml@main
