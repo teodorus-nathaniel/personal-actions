@@ -1,6 +1,6 @@
 # Actions
 
-This repository provides reusable GitHub Actions under
+This repository provides reusable GitHub Actions under:
 
 - `/.github/actions/base`
 - `/.github/actions/composed`
