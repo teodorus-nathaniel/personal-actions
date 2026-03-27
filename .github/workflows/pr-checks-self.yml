@@ -6,11 +6,4 @@ on:
 
 jobs:
   checks:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: teodorus-nathaniel/personal-actions/.github/actions/checkout@a654298121460730c863a0a484fb817c7d55cb4d
-        with:
-          ref: a654298121460730c863a0a484fb817c7d55cb4d
-      - uses: ./.holdex-actions/.github/actions/pr-checks
-        with:
-          package-manager: pnpm
+    uses: ./.github/workflows/pr-checks.yml

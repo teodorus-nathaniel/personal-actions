@@ -19,7 +19,7 @@ on:
         type: boolean
         default: true
       package-manager:
-        description: "Package manager to use (bun or pnpm)"
+        description: "Package manager to use (bun, pnpm, or npm)"
         required: false
         type: string
         default: bun
@@ -31,15 +31,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Checkout shared actions repository
-        uses: actions/checkout@v4
+      - uses: holdex/github-actions/.github/actions/base/checkout@main
         with:
-          repository: holdex/github-actions
           ref: ${{ github.workflow_sha }}
-          path: .github-actions-source
+
+      - name: Setup runtime
+        uses: ./.holdex-actions/.github/actions/base/setup-runtime
+        with:
+          package-manager: ${{ inputs.package-manager }}
 
       - name: Run selected PR checks
-        uses: ./.github-actions-source/.github/actions/pr-checks
+        uses: ./.holdex-actions/.github/actions/composed/pr-checks
         with:
           run-prettier: ${{ inputs.run-prettier }}
           run-markdown: ${{ inputs.run-markdown }}

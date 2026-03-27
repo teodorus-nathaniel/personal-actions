@@ -6,31 +6,14 @@ inputs:
     description: Optional pre-resolved changed files list
     required: false
     default: ""
-  setup-runtime:
-    description: Setup package manager runtime in this action
-    required: false
-    default: "true"
   package-manager:
-    description: Package manager to use (bun or pnpm)
+    description: Package manager to use (bun, pnpm, or npm)
     required: false
     default: "bun"
 
 runs:
   using: composite
   steps:
-    - name: Checkout shared actions repository
-      uses: actions/checkout@v4
-      with:
-        repository: holdex/github-actions
-        ref: ${{ github.action_ref || github.workflow_sha }}
-        path: .github-actions-source
-
-    - name: Setup runtime
-      uses: ./.github-actions-source/.github/actions/setup-runtime
-      with:
-        setup-runtime: ${{ inputs.setup-runtime }}
-        package-manager: ${{ inputs.package-manager }}
-
     - name: Get changed markdown files
       id: changed-markdown-files
       if: inputs.changed-files == ''
@@ -73,6 +56,8 @@ runs:
       run: |
         if [ "${{ inputs.package-manager }}" = "pnpm" ]; then
           pnpm add -g rumdl
+        elif [ "${{ inputs.package-manager }}" = "npm" ]; then
+          npm install -g rumdl
         else
           bun i -g rumdl
         fi
@@ -85,5 +70,4 @@ runs:
     - name: Lint changed Markdown files
       if: steps.resolved-markdown-files.outputs.any-changed == 'true'
       shell: bash
-      run: rumdl check --output-format github ${{
-        steps.resolved-markdown-files.outputs.files }}
+      run: rumdl check --output-format github ${{ steps.resolved-markdown-files.outputs.files }}
