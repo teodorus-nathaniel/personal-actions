@@ -8,4 +8,4 @@ jobs:
   checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: teodorus-nathaniel/personal-actions/.github/actions/pr-checks@81b0df0ad49b9a4b40f320cc3a1dd63a1cd0c4fa
+      - uses: teodorus-nathaniel/personal-actions/.github/actions/pr-checks@5110e30ed98e4b50b45d8d99f8c3c267fd67aab1
