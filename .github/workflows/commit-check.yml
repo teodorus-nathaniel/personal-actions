@@ -1,35 +1,27 @@
-name: Conventional Commit Check
+name: Conventional Commit Check for PR Title
 
 on:
   workflow_call:
+    inputs:
+      package-manager:
+        description: "Package manager to use (bun or pnpm)"
+        required: false
+        type: string
+        default: bun
 
 jobs:
   commit-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Checkout shared actions repository
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          repository: holdex/github-actions
+          ref: ${{ github.workflow_sha }}
+          path: .github-actions-source
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: ./.github-actions-source/.github/actions/commit-check
         with:
-          bun-version: latest
-
-      - name: Install commitlint
-        run: |
-          bun i -g @commitlint/cli
-          bun i -D @commitlint/config-conventional
-
-      - name: Create commitlint config if missing
-        run: |
-          if [ ! -f .commitlintrc.json ] && [ ! -f .commitlintrc.js ] && [ ! -f .commitlintrc.yml ] && [ ! -f .commitlintrc.yaml ] && ! grep -q '"commitlint"' "package.json" 2>/dev/null; then
-            echo '{"extends": ["@commitlint/config-conventional"]}' > .commitlintrc.json
-          fi
-
-      - name: Check PR title
-        if: github.event_name == 'pull_request'
-        env:
-          PR_TITLE: ${{ github.event.pull_request.title }}
-        run: |
-          echo "$PR_TITLE" | commitlint
+          package-manager: ${{ inputs.package-manager }}

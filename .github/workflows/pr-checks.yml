@@ -18,42 +18,30 @@ on:
         required: false
         type: boolean
         default: true
+      package-manager:
+        description: "Package manager to use (bun or pnpm)"
+        required: false
+        type: string
+        default: bun
 
 jobs:
-  check-draft:
+  checks:
+    if: github.event.pull_request == null || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
-    outputs:
-      should-run: ${{ steps.check.outputs.should-run }}
     steps:
-      - id: check
-        run: |
-          if [ "${{ github.event_name }}" != "pull_request" ] || [ "${{ github.event.pull_request.draft }}" != "true" ]; then
-            echo "should-run=true" >> $GITHUB_OUTPUT
-          else
-            echo "should-run=false" >> $GITHUB_OUTPUT
-          fi
-          echo "run-prettier: ${{ inputs.run-prettier }}"
-          echo "run-markdown: ${{ inputs.run-markdown }}"
-          echo "run-commits: ${{ inputs.run-commits }}"
-          echo "github.event_name: ${{ github.event_name }}"
+      - uses: actions/checkout@v4
 
-  prettier:
-    needs: check-draft
-    if:
-      needs.check-draft.outputs.should-run == 'true' && inputs.run-prettier !=
-      false
-    uses: ./.github/workflows/prettier.yml
+      - name: Checkout shared actions repository
+        uses: actions/checkout@v4
+        with:
+          repository: holdex/github-actions
+          ref: ${{ github.workflow_sha }}
+          path: .github-actions-source
 
-  markdown:
-    needs: check-draft
-    if:
-      needs.check-draft.outputs.should-run == 'true' && inputs.run-markdown !=
-      false
-    uses: ./.github/workflows/markdown-check.yml
-
-  commits:
-    needs: check-draft
-    if:
-      needs.check-draft.outputs.should-run == 'true' && inputs.run-commits !=
-      false
-    uses: ./.github/workflows/commit-check.yml
+      - name: Run selected PR checks
+        uses: ./.github-actions-source/.github/actions/pr-checks
+        with:
+          run-prettier: ${{ inputs.run-prettier }}
+          run-markdown: ${{ inputs.run-markdown }}
+          run-commits: ${{ inputs.run-commits }}
+          package-manager: ${{ inputs.package-manager }}

@@ -2,6 +2,12 @@ name: Prettier Check
 
 on:
   workflow_call:
+    inputs:
+      package-manager:
+        description: "Package manager to use (bun or pnpm)"
+        required: false
+        type: string
+        default: bun
 
 jobs:
   prettier:
@@ -9,33 +15,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check for Prettier config
-        run: |
-          CONFIG_FILES=".prettierrc .prettierrc.json .prettierrc.js .prettierrc.yaml .prettierrc.yml .prettierrc.toml prettier.config.js prettier.config.mjs"
-          HAS_CONFIG=false
-
-          for file in $CONFIG_FILES; do
-            if [ -f "$file" ]; then
-              HAS_CONFIG=true
-              break
-            fi
-          done
-
-          if [ "$HAS_CONFIG" = false ] && ! grep -q '"prettier"' "package.json" 2>/dev/null; then
-            echo "::error file=.prettierrc::No Prettier configuration file found."
-            echo "A Prettier config file is required to ensure consistent formatting across all developers."
-            echo "Without a shared config, each developer's local Prettier settings will differ, causing unnecessary formatting changes in commits."
-            echo "Please create a .prettierrc file in your repository root."
-            exit 1
-          fi
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Checkout shared actions repository
+        uses: actions/checkout@v4
         with:
-          bun-version: latest
+          repository: holdex/github-actions
+          ref: ${{ github.workflow_sha }}
+          path: .github-actions-source
 
-      - name: Install Prettier
-        run: bun i -g prettier
-
-      - name: Check formatting
-        run: prettier --check .
+      - uses: ./.github-actions-source/.github/actions/prettier
+        with:
+          package-manager: ${{ inputs.package-manager }}

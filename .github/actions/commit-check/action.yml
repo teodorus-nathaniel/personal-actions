@@ -1,0 +1,96 @@
+name: Conventional Commit Check for PR Title
+description: Validate pull request title with commitlint
+
+inputs:
+  setup-runtime:
+    description: Setup package manager runtime in this action
+    required: false
+    default: "true"
+  package-manager:
+    description: Package manager to use (bun or pnpm)
+    required: false
+    default: "bun"
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout shared actions repository
+      uses: actions/checkout@v4
+      with:
+        repository: holdex/github-actions
+        ref: ${{ github.action_ref || github.workflow_sha }}
+        path: .github-actions-source
+
+    - name: Setup runtime
+      uses: ./.github-actions-source/.github/actions/setup-runtime
+      with:
+        setup-runtime: ${{ inputs.setup-runtime }}
+        package-manager: ${{ inputs.package-manager }}
+
+    - name: Install commitlint CLI
+      shell: bash
+      run: |
+        if [ "${{ inputs.package-manager }}" = "pnpm" ]; then
+          pnpm add -g @commitlint/cli
+        else
+          bun i -g @commitlint/cli
+        fi
+
+    - name: Check for commitlint config
+      id: commitlint-config
+      shell: bash
+      run: |
+        CONFIG_FILES=".commitlintrc .commitlintrc.json .commitlintrc.yaml .commitlintrc.yml .commitlintrc.js .commitlintrc.cjs .commitlintrc.mjs .commitlintrc.ts .commitlintrc.cts commitlint.config.js commitlint.config.cjs commitlint.config.mjs commitlint.config.ts commitlint.config.cts"
+        HAS_CONFIG=false
+
+        for file in $CONFIG_FILES; do
+          if [ -f "$file" ]; then
+            HAS_CONFIG=true
+            break
+          fi
+        done
+
+        if [ "$HAS_CONFIG" = false ] && [ -f package.json ] && grep -q '"commitlint"' package.json; then
+          HAS_CONFIG=true
+        fi
+
+        if [ "$HAS_CONFIG" = true ]; then
+          echo "has-config=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "has-config=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Install dependencies if config exists
+      if: steps.commitlint-config.outputs.has-config == 'true'
+      shell: bash
+      run: |
+        if [ "${{ inputs.package-manager }}" = "pnpm" ]; then
+          pnpm install
+        else
+          bun i
+        fi
+
+    - name: Install commitlint globally if no config
+      if: steps.commitlint-config.outputs.has-config == 'false'
+      shell: bash
+      run: |
+        if [ "${{ inputs.package-manager }}" = "pnpm" ]; then
+          pnpm add -D @commitlint/config-conventional
+        else
+          bun i -D @commitlint/config-conventional
+        fi
+
+    - name: Create commitlint config if missing
+      if: steps.commitlint-config.outputs.has-config == 'false'
+      shell: bash
+      run: |
+        echo "extends:" > .commitlintrc.yml
+        echo "  - '@commitlint/config-conventional'" >> .commitlintrc.yml
+
+    - name: Check PR title
+      if: github.event_name == 'pull_request'
+      shell: bash
+      env:
+        PR_TITLE: ${{ github.event.pull_request.title }}
+      run: |
+        echo "$PR_TITLE" | commitlint
