@@ -12,6 +12,6 @@ runs:
     - name: Checkout Holdex Github Actions
       uses: actions/checkout@v4
       with:
-        repository: holdex/github-actions
+        repository: teodorus-nathaniel/personal-actions
         ref: ${{ inputs.ref }}
         path: .holdex-actions
