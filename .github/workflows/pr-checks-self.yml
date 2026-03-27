@@ -6,4 +6,5 @@ on:
 
 jobs:
   checks:
-    uses: ./.github/workflows/pr-checks.yml
+    steps:
+      - uses: teodorus-nathaniel/personal-actions/.github/workflows/pr-checks.yml@0389f1d0d0d731fc2fd31ab7b1e751ffa5b7c230
