@@ -8,9 +8,9 @@ jobs:
   checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: teodorus-nathaniel/personal-actions/.github/actions/checkout@0c7b6923c9031568265bb4e03f2dd1339ac474fe
+      - uses: teodorus-nathaniel/personal-actions/.github/actions/checkout@a654298121460730c863a0a484fb817c7d55cb4d
         with:
-          ref: 0c7b6923c9031568265bb4e03f2dd1339ac474fe
+          ref: a654298121460730c863a0a484fb817c7d55cb4d
       - uses: ./.holdex-actions/.github/actions/pr-checks
         with:
           package-manager: pnpm
