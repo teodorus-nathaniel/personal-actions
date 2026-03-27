@@ -22,8 +22,10 @@ inputs:
 runs:
   using: composite
   steps:
-    - run: echo "action_ref ${{ github.action_ref }}"
-    - run: echo "workflow_sha ${{ github.workflow_sha }}"
+    - shell: bash
+      run: 'echo "action_ref ${{ github.action_ref }}"'
+    - shell: bash
+      run: 'echo "workflow_sha ${{ github.workflow_sha }}"'
     - name: Checkout shared actions repository
       uses: actions/checkout@v4
       with:
