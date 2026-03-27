@@ -31,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: holdex/github-actions/.github/actions/base/checkout@main
+      - uses: teodorus-nathaniel/personal-actions/.github/actions/base/checkout@main
         with:
           ref: ${{ github.workflow_sha }}
 
