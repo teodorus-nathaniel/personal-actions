@@ -22,23 +22,12 @@ inputs:
 runs:
   using: composite
   steps:
-    - shell: bash
-      run: 'echo "action_ref ${{ github.action_ref }}"'
-    - shell: bash
-      run: 'echo "workflow_sha ${{ github.workflow_sha }}"'
-    - name: Checkout shared actions repository
-      uses: actions/checkout@v4
-      with:
-        repository: holdex/github-actions
-        ref: ${{ github.action_ref || github.workflow_sha }}
-        path: .github-actions-source
-
     - name: Setup runtime
       if:
         (github.event_name != 'pull_request' || github.event.pull_request.draft
         != true) && (inputs.run-prettier != 'false' || inputs.run-markdown !=
         'false' || inputs.run-commits != 'false')
-      uses: ./.github-actions-source/.github/actions/setup-runtime
+      uses: ./.holdex-actions/.github/actions/setup-runtime
       with:
         package-manager: ${{ inputs.package-manager }}
 
@@ -54,7 +43,7 @@ runs:
       if:
         (github.event_name != 'pull_request' || github.event.pull_request.draft
         != true) && inputs.run-prettier != 'false'
-      uses: ./.github-actions-source/.github/actions/prettier
+      uses: ./.holdex-actions/.github/actions/prettier
       with:
         changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
         setup-runtime: "false"
@@ -64,7 +53,7 @@ runs:
       if:
         (github.event_name != 'pull_request' || github.event.pull_request.draft
         != true) && inputs.run-markdown != 'false'
-      uses: ./.github-actions-source/.github/actions/markdown-check
+      uses: ./.holdex-actions/.github/actions/markdown-check
       with:
         changed-files: ${{ steps.changed-files.outputs.all_changed_files }}
         setup-runtime: "false"
@@ -74,7 +63,7 @@ runs:
       if:
         (github.event_name != 'pull_request' || github.event.pull_request.draft
         != true) && inputs.run-commits != 'false'
-      uses: ./.github-actions-source/.github/actions/commit-check
+      uses: ./.holdex-actions/.github/actions/commit-check
       with:
         setup-runtime: "false"
         package-manager: ${{ inputs.package-manager }}
